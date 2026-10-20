@@ -429,6 +429,9 @@ class RustVaultFfi {
       if (Platform.isWindows) {
         final candidates = [
           'pwdvault_ffi.dll',
+          'core/target/release/pwdvault_ffi.dll',
+          '../core/target/release/pwdvault_ffi.dll',
+          '../../core/target/release/pwdvault_ffi.dll',
           'core/target/x86_64-pc-windows-gnullvm/release/pwdvault_ffi.dll',
           '../../core/target/x86_64-pc-windows-gnullvm/release/pwdvault_ffi.dll',
           '../core/target/x86_64-pc-windows-gnullvm/release/pwdvault_ffi.dll',
@@ -436,15 +439,62 @@ class RustVaultFfi {
         ];
         for (final p in candidates) {
           if (File(p).existsSync()) {
-            _dylib = DynamicLibrary.open(p);
-            break;
+            try {
+              _dylib = DynamicLibrary.open(File(p).absolute.path);
+              break;
+            } catch (_) {}
           }
         }
-        _dylib ??= DynamicLibrary.open('pwdvault_ffi.dll');
-      } else if (Platform.isAndroid || Platform.isLinux) {
-        _dylib = DynamicLibrary.open('libpwdvault_ffi.so');
-      } else if (Platform.isIOS || Platform.isMacOS) {
+        try {
+          _dylib ??= DynamicLibrary.open('pwdvault_ffi.dll');
+        } catch (_) {}
+      } else if (Platform.isAndroid) {
+        try {
+          _dylib = DynamicLibrary.open('libpwdvault_ffi.so');
+        } catch (_) {}
+      } else if (Platform.isLinux) {
+        final candidates = [
+          'libpwdvault_ffi.so',
+          'lib/libpwdvault_ffi.so',
+          'core/target/release/libpwdvault_ffi.so',
+          '../core/target/release/libpwdvault_ffi.so',
+          '../../core/target/release/libpwdvault_ffi.so',
+        ];
+        for (final p in candidates) {
+          if (File(p).existsSync()) {
+            try {
+              _dylib = DynamicLibrary.open(File(p).absolute.path);
+              break;
+            } catch (_) {}
+          }
+        }
+        try {
+          _dylib ??= DynamicLibrary.open('libpwdvault_ffi.so');
+        } catch (_) {}
+      } else if (Platform.isIOS) {
         _dylib = DynamicLibrary.process();
+      } else if (Platform.isMacOS) {
+        final candidates = [
+          'libpwdvault_ffi.dylib',
+          'core/target/release/libpwdvault_ffi.dylib',
+          '../core/target/release/libpwdvault_ffi.dylib',
+          '../../core/target/release/libpwdvault_ffi.dylib',
+        ];
+        for (final p in candidates) {
+          if (File(p).existsSync()) {
+            try {
+              _dylib = DynamicLibrary.open(File(p).absolute.path);
+              break;
+            } catch (_) {}
+          }
+        }
+        try {
+          _dylib ??= DynamicLibrary.process();
+        } catch (_) {
+          try {
+            _dylib ??= DynamicLibrary.open('libpwdvault_ffi.dylib');
+          } catch (_) {}
+        }
       }
 
       if (_dylib != null) {

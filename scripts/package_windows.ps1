@@ -12,9 +12,13 @@ $ErrorActionPreference = "Stop"
 
 $llvmBin = "C:\Users\daya\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260908-ucrt-x86_64\bin"
 if (Test-Path $llvmBin) {
-    $env:PATH = "$llvmBin;C:\Users\daya\.cargo\bin;C:\Users\daya\flutter\bin;" + $env:PATH
-} else {
-    $env:PATH = "C:\Users\daya\.cargo\bin;C:\Users\daya\flutter\bin;" + $env:PATH
+    $env:PATH = "$llvmBin;" + $env:PATH
+}
+if (Test-Path "C:\Users\daya\.cargo\bin") {
+    $env:PATH = "C:\Users\daya\.cargo\bin;" + $env:PATH
+}
+if (Test-Path "C:\Users\daya\flutter\bin") {
+    $env:PATH = "C:\Users\daya\flutter\bin;" + $env:PATH
 }
 
 $rootDir = (Resolve-Path "$PSScriptRoot\..").Path
@@ -41,6 +45,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Cargo build failed for pwdvault-ffi" }
     
     $ffiDll = Join-Path $coreDir "target\release\pwdvault_ffi.dll"
+    if (-not (Test-Path $ffiDll)) {
+        $altDll = Get-ChildItem -Path (Join-Path $coreDir "target") -Filter "pwdvault_ffi.dll" -Recurse | Select-Object -First 1
+        if ($altDll) { $ffiDll = $altDll.FullName }
+    }
     Copy-Item $ffiDll -Destination (Join-Path $flutterDir "pwdvault_ffi.dll") -Force
     Copy-Item $ffiDll -Destination (Join-Path $portableDir "pwdvault_ffi.dll") -Force
     Write-Host "  [OK] pwdvault_ffi.dll deployed" -ForegroundColor Green
@@ -56,6 +64,10 @@ try {
     if ($LASTEXITCODE -ne 0) { throw "Cargo build failed for pwdvault-native-host" }
     
     $hostExe = Join-Path $coreDir "target\release\pwdvault-native-host.exe"
+    if (-not (Test-Path $hostExe)) {
+        $altExe = Get-ChildItem -Path (Join-Path $coreDir "target") -Filter "pwdvault-native-host.exe" -Recurse | Select-Object -First 1
+        if ($altExe) { $hostExe = $altExe.FullName }
+    }
     Copy-Item $hostExe -Destination (Join-Path $portableDir "pwdvault-native-host.exe") -Force
     Write-Host "  [OK] pwdvault-native-host.exe deployed" -ForegroundColor Green
 } finally {
@@ -63,10 +75,26 @@ try {
 }
 
 # 3b. Copy Flutter Windows Release Binaries (if available)
-$flutterReleaseDir = Join-Path $flutterDir "build\windows\x64\runner\Release"
-if (Test-Path $flutterReleaseDir) {
-    Copy-Item "$flutterReleaseDir\*" -Destination $portableDir -Recurse -Force
-    Write-Host "  [OK] Flutter Windows release binaries staged" -ForegroundColor Green
+$flutterReleaseDirs = @(
+    (Join-Path $flutterDir "build\windows\x64\runner\Release"),
+    (Join-Path $flutterDir "build\windows\runner\Release")
+)
+$foundFlutterDir = $false
+foreach ($cand in $flutterReleaseDirs) {
+    if (Test-Path $cand) {
+        Copy-Item "$cand\*" -Destination $portableDir -Recurse -Force
+        Write-Host "  [OK] Flutter Windows release binaries staged from $cand" -ForegroundColor Green
+        $foundFlutterDir = $true
+        break
+    }
+}
+if (-not $foundFlutterDir) {
+    $flutterExe = Get-ChildItem -Path (Join-Path $flutterDir "build") -Filter "pwdvault_flutter.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($flutterExe) {
+        $parentDir = $flutterExe.DirectoryName
+        Copy-Item "$parentDir\*" -Destination $portableDir -Recurse -Force
+        Write-Host "  [OK] Staged from $($parentDir)" -ForegroundColor Green
+    }
 }
 
 # 4. Copy Browser Extension Manifests & Documentation
@@ -81,7 +109,7 @@ Write-Host "  [OK] Manifests and documentation staged" -ForegroundColor Green
 # 5. Create Standalone Portable ZIP
 Write-Host "`n[4/5] Creating Standalone Portable Distribution ZIP..." -ForegroundColor Yellow
 $zipOutput = Join-Path $distDir "AntigravityVault-v1.0.0-Windows-x64-Portable.zip"
-Compress-Archive -Path "$portableDir\*" -DestinationPath $zipOutput -CompressionLevel Optimal
+Compress-Archive -Path "$portableDir\*" -DestinationPath $zipOutput -CompressionLevel Optimal -Force
 Write-Host "  [OK] Created $zipOutput" -ForegroundColor Green
 
 # 6. Generate Cryptographic Checksums (SHA-256)

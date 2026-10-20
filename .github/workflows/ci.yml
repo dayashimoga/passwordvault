@@ -118,6 +118,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Rust FFI for Tests
+        run: |
+          cd core
+          cargo build --release -p pwdvault-ffi
+          mkdir -p ../apps/flutter/lib
+          cp target/release/libpwdvault_ffi.so ../apps/flutter/libpwdvault_ffi.so || true
+          cp target/release/libpwdvault_ffi.so ../apps/flutter/lib/libpwdvault_ffi.so || true
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -237,12 +248,12 @@ jobs:
         run: |
           cd apps/flutter
           flutter pub get
-          flutter build apk --release
+          flutter build apk --release --android-skip-build-dependency-validation
 
       - name: Build Android App Bundle (AAB)
         run: |
           cd apps/flutter
-          flutter build appbundle --release
+          flutter build appbundle --release --android-skip-build-dependency-validation
 
       - name: Upload Android APK Artifact
         uses: actions/upload-artifact@v4
@@ -283,7 +294,6 @@ jobs:
 
       - name: Package Linux Distribution
         run: |
-          flutter config --enable-linux-desktop
           bash scripts/package_linux.sh
 
       - name: Upload Linux x64 Artifact
@@ -311,27 +321,9 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Build Rust FFI and Native Host
+      - name: Package macOS Distribution
         run: |
-          cd core
-          cargo build --release -p pwdvault-ffi
-          cargo build --release -p pwdvault-native-host
-          cp target/release/libpwdvault_ffi.dylib ../apps/flutter/libpwdvault_ffi.dylib || true
-
-      - name: Build Flutter macOS Release
-        run: |
-          cd apps/flutter
-          flutter config --enable-macos-desktop
-          flutter pub get
-          flutter build macos --release
-
-      - name: Stage & Zip macOS Application
-        run: |
-          mkdir -p dist/macos
-          cd "apps/flutter/build/macos/Build/Products/Release"
-          zip -r "../../../../../dist/macos/AntigravityVault-macOS.zip" "Antigravity Vault.app"
-          cd "../../../../../dist/macos"
-          shasum -a 256 AntigravityVault-macOS.zip > SHA256SUMS.txt
+          bash scripts/package_macos.sh
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4

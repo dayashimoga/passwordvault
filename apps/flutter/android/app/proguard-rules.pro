@@ -33,3 +33,12 @@
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
+
+# Suppress missing class warnings for optional Google Play Core and deferred components referenced by Flutter engine
+-dontwarn com.google.android.play.core.**
+-dontwarn io.flutter.embedding.engine.deferredcomponents.**
+-dontwarn androidx.window.**
+-dontwarn androidx.annotation.**
+-dontwarn org.bouncycastle.**
+-dontwarn javax.annotation.**
+
