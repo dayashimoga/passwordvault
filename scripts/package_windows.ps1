@@ -99,11 +99,26 @@ if (-not $foundFlutterDir) {
 
 # 4. Copy Browser Extension Manifests & Documentation
 Write-Host "`n[3/5] Copying Browser Manifests and Licenses..." -ForegroundColor Yellow
-$manifestDir = Join-Path $rootDir "apps\browser_extension\manifest"
-Copy-Item (Join-Path $manifestDir "com.antigravity.pwdvault.json") -Destination $portableDir -Force
-Copy-Item (Join-Path $manifestDir "com.antigravity.pwdvault.firefox.json") -Destination $portableDir -Force
-Copy-Item (Join-Path $rootDir "docs\UserGuide.md") -Destination (Join-Path $portableDir "README.txt") -Force
-Copy-Item (Join-Path $rootDir "docs\RecoveryGuide.md") -Destination $portableDir -Force
+$manifestDirs = @(
+    (Join-Path $rootDir "apps\browser_extension\native_host"),
+    (Join-Path $rootDir "apps\browser_extension\manifest")
+)
+foreach ($dir in $manifestDirs) {
+    if (Test-Path $dir) {
+        $c1 = Join-Path $dir "com.antigravity.pwdvault.json"
+        $c2 = Join-Path $dir "com.antigravity.pwdvault.firefox.json"
+        if (Test-Path $c1) { Copy-Item $c1 -Destination $portableDir -Force }
+        if (Test-Path $c2) { Copy-Item $c2 -Destination $portableDir -Force }
+    }
+}
+$userGuide = Join-Path $rootDir "docs\UserGuide.md"
+if (Test-Path $userGuide) {
+    Copy-Item $userGuide -Destination (Join-Path $portableDir "README.txt") -Force
+}
+$recGuide = Join-Path $rootDir "docs\RecoveryGuide.md"
+if (Test-Path $recGuide) {
+    Copy-Item $recGuide -Destination $portableDir -Force
+}
 Write-Host "  [OK] Manifests and documentation staged" -ForegroundColor Green
 
 # 5. Create Standalone Portable ZIP

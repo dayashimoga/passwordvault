@@ -60,9 +60,12 @@ if [ -f "$CORE_DIR/target/release/pwdvault-native-host" ]; then
 fi
 
 # Copy browser extension manifests and desktop integration files
-if [ -f "$WORKSPACE_ROOT/apps/browser_extension/manifest/com.antigravity.pwdvault.json" ]; then
-    cp "$WORKSPACE_ROOT/apps/browser_extension/manifest/com.antigravity.pwdvault.json" "$STAGE_DIR/"
-fi
+for manifest_dir in "$WORKSPACE_ROOT/apps/browser_extension/native_host" "$WORKSPACE_ROOT/apps/browser_extension/manifest"; do
+    if [ -d "$manifest_dir" ]; then
+        [ -f "$manifest_dir/com.antigravity.pwdvault.json" ] && cp "$manifest_dir/com.antigravity.pwdvault.json" "$STAGE_DIR/" || true
+        [ -f "$manifest_dir/com.antigravity.pwdvault.firefox.json" ] && cp "$manifest_dir/com.antigravity.pwdvault.firefox.json" "$STAGE_DIR/" || true
+    fi
+done
 if [ -f "$WORKSPACE_ROOT/apps/flutter/linux/pwdvault.desktop" ]; then
     cp "$WORKSPACE_ROOT/apps/flutter/linux/pwdvault.desktop" "$STAGE_DIR/"
 fi
