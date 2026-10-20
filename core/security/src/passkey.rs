@@ -137,11 +137,7 @@ pub fn generate_passkey(
 /// - 32 bytes: `rp_id_hash` = `SHA-256(rp_id)`
 /// - 1 byte: `flags` (UP = 0x01, UV = 0x04)
 /// - 4 bytes: `sign_count` (big-endian uint32)
-pub fn build_authenticator_data(
-    rp_id: &str,
-    flags: u8,
-    sign_count: u32,
-) -> Vec<u8> {
+pub fn build_authenticator_data(rp_id: &str, flags: u8, sign_count: u32) -> Vec<u8> {
     let mut out = Vec::with_capacity(37);
     let rp_id_hash = Sha256::digest(rp_id.trim().to_lowercase().as_bytes());
     out.extend_from_slice(&rp_id_hash);
@@ -219,7 +215,10 @@ pub fn verify_assertion(
 
     // 1. Verify RP ID hash in authenticatorData
     let expected_rp_hash = Sha256::digest(clean_expected.as_bytes());
-    if !bool::from(subtle::ConstantTimeEq::ct_eq(&assertion.authenticator_data[..32], &expected_rp_hash[..])) {
+    if !bool::from(subtle::ConstantTimeEq::ct_eq(
+        &assertion.authenticator_data[..32],
+        &expected_rp_hash[..],
+    )) {
         return Ok(false);
     }
 
@@ -269,20 +268,15 @@ mod tests {
         let client_data = r#"{"type":"webauthn.get","challenge":"dGhpcy1pcy1hLWNoYWxsZW5nZQ","origin":"https://github.com"}"#;
 
         // 1. Sign assertion
-        let assertion = sign_assertion(
-            &mut passkey,
-            "github.com",
-            client_data,
-            true,
-            true,
-        )
-        .expect("Signing failed");
+        let assertion = sign_assertion(&mut passkey, "github.com", client_data, true, true)
+            .expect("Signing failed");
 
         assert_eq!(passkey.sign_count, 1);
         assert_eq!(assertion.credential_id, passkey.credential_id);
 
         // 2. Verify assertion
-        let is_valid = verify_assertion(&passkey, "github.com", &assertion).expect("Verification failed");
+        let is_valid =
+            verify_assertion(&passkey, "github.com", &assertion).expect("Verification failed");
         assert!(is_valid);
 
         // 3. RP ID mismatch fails

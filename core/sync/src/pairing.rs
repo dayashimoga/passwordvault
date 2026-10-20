@@ -80,7 +80,9 @@ pub fn verify_pairing_qr_data(
 ) -> Result<PairingPayload, SyncError> {
     const PREFIX: &str = "pwdvault://pair?data=";
     if !qr_uri.starts_with(PREFIX) {
-        return Err(SyncError::ProtocolError("Invalid pairing URI format".to_string()));
+        return Err(SyncError::ProtocolError(
+            "Invalid pairing URI format".to_string(),
+        ));
     }
 
     let encoded = &qr_uri[PREFIX.len()..];
@@ -96,7 +98,9 @@ pub fn verify_pairing_qr_data(
         .as_secs();
 
     if now > payload.expires_at {
-        return Err(SyncError::ProtocolError("Pairing QR code has expired".to_string()));
+        return Err(SyncError::ProtocolError(
+            "Pairing QR code has expired".to_string(),
+        ));
     }
 
     let expected_fp = compute_sync_key_fingerprint(sync_key);
@@ -154,9 +158,21 @@ fn base64_url_decode(s: &str) -> Result<Vec<u8>, String> {
     let mut out = Vec::new();
     for chunk in bytes.chunks(4) {
         let c0 = char_to_val(chunk[0])?;
-        let c1 = if chunk.len() > 1 { char_to_val(chunk[1])? } else { 0 };
-        let c2 = if chunk.len() > 2 { char_to_val(chunk[2])? } else { 0 };
-        let c3 = if chunk.len() > 3 { char_to_val(chunk[3])? } else { 0 };
+        let c1 = if chunk.len() > 1 {
+            char_to_val(chunk[1])?
+        } else {
+            0
+        };
+        let c2 = if chunk.len() > 2 {
+            char_to_val(chunk[2])?
+        } else {
+            0
+        };
+        let c3 = if chunk.len() > 3 {
+            char_to_val(chunk[3])?
+        } else {
+            0
+        };
 
         out.push((c0 << 2) | (c1 >> 4));
         if chunk.len() > 2 {

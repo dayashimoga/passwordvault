@@ -24,13 +24,11 @@ pub mod vector_clock;
 
 pub use crdt::{merge_vault_payloads, SyncMergeReport};
 pub use lan_sync::{
-    compute_auth_proof, create_handshake_init, process_handshake_init,
-    verify_client_final, verify_server_response_and_finalize, LanHandshakeFinal,
-    LanHandshakeInit, LanHandshakeResponse,
+    compute_auth_proof, create_handshake_init, process_handshake_init, verify_client_final,
+    verify_server_response_and_finalize, LanHandshakeFinal, LanHandshakeInit, LanHandshakeResponse,
 };
 pub use pairing::{
-    compute_sync_key_fingerprint, generate_pairing_qr_data, verify_pairing_qr_data,
-    PairingPayload,
+    compute_sync_key_fingerprint, generate_pairing_qr_data, verify_pairing_qr_data, PairingPayload,
 };
 pub use syncpack::{
     apply_syncpack, create_syncpack, read_syncpack, SyncPackPayload, SYNCPACK_HEADER_LEN,

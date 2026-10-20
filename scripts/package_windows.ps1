@@ -62,6 +62,13 @@ try {
     Pop-Location
 }
 
+# 3b. Copy Flutter Windows Release Binaries (if available)
+$flutterReleaseDir = Join-Path $flutterDir "build\windows\x64\runner\Release"
+if (Test-Path $flutterReleaseDir) {
+    Copy-Item "$flutterReleaseDir\*" -Destination $portableDir -Recurse -Force
+    Write-Host "  [OK] Flutter Windows release binaries staged" -ForegroundColor Green
+}
+
 # 4. Copy Browser Extension Manifests & Documentation
 Write-Host "`n[3/5] Copying Browser Manifests and Licenses..." -ForegroundColor Yellow
 $manifestDir = Join-Path $rootDir "apps\browser_extension\manifest"

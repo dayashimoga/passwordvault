@@ -22,13 +22,7 @@ impl Sha1 {
     /// Creates a new SHA-1 instance initialized to standard constants.
     pub fn new() -> Self {
         Self {
-            state: [
-                0x67452301,
-                0xEFCDAB89,
-                0x98BADCFE,
-                0x10325476,
-                0xC3D2E1F0,
-            ],
+            state: [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0],
             buffer: [0u8; 64],
             buffer_len: 0,
             total_len: 0,
@@ -171,16 +165,10 @@ mod tests {
         );
 
         let abc = Sha1::digest(b"abc");
-        assert_eq!(
-            hex::encode(abc),
-            "a9993e364706816aba3e25717850c26c9cd0d89d"
-        );
+        assert_eq!(hex::encode(abc), "a9993e364706816aba3e25717850c26c9cd0d89d");
 
         let fox = Sha1::digest(b"The quick brown fox jumps over the lazy dog");
-        assert_eq!(
-            hex::encode(fox),
-            "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12"
-        );
+        assert_eq!(hex::encode(fox), "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12");
     }
 
     mod hex {

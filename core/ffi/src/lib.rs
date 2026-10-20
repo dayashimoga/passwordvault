@@ -7,9 +7,7 @@ use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 use std::panic::catch_unwind;
 
-use pwdvault_backup::{
-    BackupArchive, BackupCredential, RecoveryKey, RecoveryKitDocument,
-};
+use pwdvault_backup::{BackupArchive, BackupCredential, RecoveryKey, RecoveryKitDocument};
 use pwdvault_crypto::KdfParams;
 use pwdvault_generator::{
     estimate_crack_time, generate_passphrase, generate_password, PassphraseOptions, PasswordOptions,
@@ -992,7 +990,8 @@ pub unsafe extern "C" fn vault_ffi_sync_create_syncpack(
             VectorClock::default()
         };
 
-        let pack_bytes = match create_syncpack(&payload, &sync_key, device_id, device_name, &clock) {
+        let pack_bytes = match create_syncpack(&payload, &sync_key, device_id, device_name, &clock)
+        {
             Ok(b) => b,
             Err(_) => return FfiResultCode::InternalError,
         };
@@ -1065,19 +1064,20 @@ pub unsafe extern "C" fn vault_ffi_sync_apply_syncpack(
         };
 
         let pack_slice = unsafe { std::slice::from_raw_parts(pack_data_ptr, pack_len) };
-        let report = match apply_syncpack(&mut local_payload, &mut local_clock, pack_slice, &sync_key) {
-            Ok(r) => r,
-            Err(e) => {
-                let msg = e.to_string();
-                if msg.contains("Decryption failed") {
-                    return FfiResultCode::AuthenticationFailed;
-                } else if msg.contains("truncated") || msg.contains("commitment") {
-                    return FfiResultCode::IntegrityFailed;
-                } else {
-                    return FfiResultCode::InternalError;
+        let report =
+            match apply_syncpack(&mut local_payload, &mut local_clock, pack_slice, &sync_key) {
+                Ok(r) => r,
+                Err(e) => {
+                    let msg = e.to_string();
+                    if msg.contains("Decryption failed") {
+                        return FfiResultCode::AuthenticationFailed;
+                    } else if msg.contains("truncated") || msg.contains("commitment") {
+                        return FfiResultCode::IntegrityFailed;
+                    } else {
+                        return FfiResultCode::InternalError;
+                    }
                 }
-            }
-        };
+            };
 
         #[derive(serde::Serialize)]
         struct ApplySyncResult {
@@ -1923,8 +1923,9 @@ mod tests {
         // 2. Generate recovery kit document
         let vault_name = CString::new("Personal Vault").unwrap();
         let mut out_doc: *mut c_char = std::ptr::null_mut();
-        let code_doc =
-            unsafe { vault_ffi_generate_recovery_kit_doc(vault_name.as_ptr(), out_key, &mut out_doc) };
+        let code_doc = unsafe {
+            vault_ffi_generate_recovery_kit_doc(vault_name.as_ptr(), out_key, &mut out_doc)
+        };
         assert_eq!(code_doc, FfiResultCode::Success);
         assert!(!out_doc.is_null());
 
@@ -2016,9 +2017,8 @@ mod tests {
         // 2. Analyze dedup against empty current items
         let empty_current = CString::new("[]").unwrap();
         let mut out_prev: *mut c_char = std::ptr::null_mut();
-        let code_dedup = unsafe {
-            vault_ffi_analyze_dedup(empty_current.as_ptr(), out_items, &mut out_prev)
-        };
+        let code_dedup =
+            unsafe { vault_ffi_analyze_dedup(empty_current.as_ptr(), out_items, &mut out_prev) };
         assert_eq!(code_dedup, FfiResultCode::Success);
         assert!(!out_prev.is_null());
 
@@ -2045,7 +2045,9 @@ mod tests {
 
     #[test]
     fn test_ffi_sync_lifecycle() {
-        let sync_key_hex = CString::new("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef").unwrap();
+        let sync_key_hex =
+            CString::new("0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef")
+                .unwrap();
         let dev_id = CString::new("device-alpha").unwrap();
         let dev_name = CString::new("Alice Phone").unwrap();
         let addrs = CString::new("192.168.1.10:7890").unwrap();
@@ -2173,11 +2175,12 @@ mod tests {
         assert!(out_valid);
 
         // 3. Parse otpauth URI
-        let uri = CString::new("otpauth://totp/GitHub:alice?secret=JBSWY3DPEHPK3PXP&issuer=GitHub&digits=6&period=30").unwrap();
+        let uri = CString::new(
+            "otpauth://totp/GitHub:alice?secret=JBSWY3DPEHPK3PXP&issuer=GitHub&digits=6&period=30",
+        )
+        .unwrap();
         let mut out_json: *mut c_char = std::ptr::null_mut();
-        let parse_code = unsafe {
-            vault_ffi_totp_parse_uri(uri.as_ptr(), &mut out_json)
-        };
+        let parse_code = unsafe { vault_ffi_totp_parse_uri(uri.as_ptr(), &mut out_json) };
         assert_eq!(parse_code, FfiResultCode::Success);
         assert!(!out_json.is_null());
 
@@ -2215,7 +2218,10 @@ mod tests {
         assert!(passkey_str.contains("\"sign_count\":0"));
 
         // 2. Sign assertion
-        let client_data = CString::new(r#"{"type":"webauthn.get","challenge":"AAAA","origin":"https://github.com"}"#).unwrap();
+        let client_data = CString::new(
+            r#"{"type":"webauthn.get","challenge":"AAAA","origin":"https://github.com"}"#,
+        )
+        .unwrap();
         let mut out_assertion: *mut c_char = std::ptr::null_mut();
         let mut out_updated_passkey: *mut c_char = std::ptr::null_mut();
 
@@ -2274,9 +2280,8 @@ mod tests {
 
         let payload_json = CString::new(serde_json::to_string(&payload).unwrap()).unwrap();
         let mut out_audit: *mut c_char = std::ptr::null_mut();
-        let code_audit = unsafe {
-            vault_ffi_audit_vault(payload_json.as_ptr(), 1700000000, &mut out_audit)
-        };
+        let code_audit =
+            unsafe { vault_ffi_audit_vault(payload_json.as_ptr(), 1700000000, &mut out_audit) };
         assert_eq!(code_audit, FfiResultCode::Success);
         assert!(!out_audit.is_null());
 
@@ -2304,7 +2309,11 @@ mod tests {
         assert_eq!(prefix_str, "5BAA6");
 
         // 3. Breach check response
-        let mock_body = CString::new(format!("{}:3861493\r\nFEEDBEEF000000000000000000000000000:1\r\n", suffix_str)).unwrap();
+        let mock_body = CString::new(format!(
+            "{}:3861493\r\nFEEDBEEF000000000000000000000000000:1\r\n",
+            suffix_str
+        ))
+        .unwrap();
         let mut out_count: u64 = 0;
         let code_chk = unsafe {
             vault_ffi_breach_check_response(out_suffix, mock_body.as_ptr(), &mut out_count)
@@ -2319,4 +2328,3 @@ mod tests {
         }
     }
 }
-

@@ -128,8 +128,7 @@ mod tests {
             .expect("server auth failed");
 
         // 4. Server verifies client final
-        verify_client_final(&final_msg, &server_challenge, &sync_key)
-            .expect("client auth failed");
+        verify_client_final(&final_msg, &server_challenge, &sync_key).expect("client auth failed");
     }
 
     #[test]

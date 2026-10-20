@@ -1,10 +1,10 @@
 #![deny(unsafe_code)]
 
-use std::fs;
 use pwdvault_crypto::KdfParams;
 use pwdvault_native_host::handler::{handle_request, HostSession};
 use pwdvault_native_host::protocol::{NativeRequest, NativeResponse, VaultStatus};
 use pwdvault_vault::{ItemCategory, VaultContainer, VaultItem, VaultPayload};
+use std::fs;
 
 #[test]
 fn test_full_native_host_autofill_lifecycle_and_phishing_defense() {
@@ -48,7 +48,11 @@ fn test_full_native_host_autofill_lifecycle_and_phishing_defense() {
     };
     let handshake_resp = handle_request(&mut session, handshake_req);
     let session_token = match handshake_resp {
-        NativeResponse::HandshakeResponse { session_token, vault_status, .. } => {
+        NativeResponse::HandshakeResponse {
+            session_token,
+            vault_status,
+            ..
+        } => {
             assert_eq!(vault_status, VaultStatus::Locked);
             session_token
         }
@@ -63,7 +67,11 @@ fn test_full_native_host_autofill_lifecycle_and_phishing_defense() {
     };
     let unlock_resp = handle_request(&mut session, unlock_req);
     match unlock_resp {
-        NativeResponse::UnlockResponse { success, item_count, .. } => {
+        NativeResponse::UnlockResponse {
+            success,
+            item_count,
+            ..
+        } => {
             assert!(success);
             assert_eq!(item_count, 1);
         }
@@ -148,9 +156,14 @@ fn test_full_native_host_autofill_lifecycle_and_phishing_defense() {
     }
 
     // 10. Lock vault and ensure subsequent requests fail
-    let lock_req = NativeRequest::Lock { session_token: session_token.clone() };
+    let lock_req = NativeRequest::Lock {
+        session_token: session_token.clone(),
+    };
     let lock_resp = handle_request(&mut session, lock_req);
-    assert!(matches!(lock_resp, NativeResponse::LockResponse { success: true }));
+    assert!(matches!(
+        lock_resp,
+        NativeResponse::LockResponse { success: true }
+    ));
 
     let locked_get_req = NativeRequest::GetLogins {
         session_token,

@@ -84,17 +84,24 @@ pub fn create_syncpack(
 /// Decrypts and deserializes an authenticated `.syncpack` byte buffer.
 pub fn read_syncpack(pack_bytes: &[u8], sync_key: &[u8; 32]) -> Result<SyncPackPayload, SyncError> {
     if pack_bytes.len() < SYNCPACK_HEADER_LEN + 16 {
-        return Err(SyncError::ProtocolError("Syncpack buffer truncated".to_string()));
+        return Err(SyncError::ProtocolError(
+            "Syncpack buffer truncated".to_string(),
+        ));
     }
 
     let magic = &pack_bytes[0..8];
     if magic != SYNCPACK_MAGIC {
-        return Err(SyncError::ProtocolError("Invalid syncpack magic identifier".to_string()));
+        return Err(SyncError::ProtocolError(
+            "Invalid syncpack magic identifier".to_string(),
+        ));
     }
 
     let version = u32::from_le_bytes(pack_bytes[8..12].try_into().unwrap());
     if version != 1 {
-        return Err(SyncError::ProtocolError(format!("Unsupported syncpack version: {}", version)));
+        return Err(SyncError::ProtocolError(format!(
+            "Unsupported syncpack version: {}",
+            version
+        )));
     }
 
     let mut nonce = [0u8; NONCE_LEN];
@@ -104,13 +111,16 @@ pub fn read_syncpack(pack_bytes: &[u8], sync_key: &[u8; 32]) -> Result<SyncPackP
     let header = &pack_bytes[0..SYNCPACK_HEADER_LEN];
     let ciphertext = &pack_bytes[SYNCPACK_HEADER_LEN..];
 
-    let plaintext = decrypt_xchacha20(sync_key, &nonce, ciphertext, header)
-        .map_err(|_| SyncError::ProtocolError("Decryption failed: corrupted data or wrong sync key".to_string()))?;
+    let plaintext = decrypt_xchacha20(sync_key, &nonce, ciphertext, header).map_err(|_| {
+        SyncError::ProtocolError("Decryption failed: corrupted data or wrong sync key".to_string())
+    })?;
 
     // Verify BLAKE3 commitment
     let computed_commitment = *blake3::hash(&plaintext).as_bytes();
     if computed_commitment != commitment {
-        return Err(SyncError::ProtocolError("BLAKE3 commitment integrity mismatch".to_string()));
+        return Err(SyncError::ProtocolError(
+            "BLAKE3 commitment integrity mismatch".to_string(),
+        ));
     }
 
     let pack_payload: SyncPackPayload = serde_json::from_slice(&plaintext)

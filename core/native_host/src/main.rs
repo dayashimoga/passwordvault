@@ -6,7 +6,9 @@ use std::io::{self, BufReader, BufWriter};
 use std::path::PathBuf;
 
 use pwdvault_native_host::handler::{handle_request, HostSession};
-use pwdvault_native_host::protocol::{read_native_message, write_native_message, NativeRequest, NativeResponse};
+use pwdvault_native_host::protocol::{
+    read_native_message, write_native_message, NativeRequest, NativeResponse,
+};
 
 fn main() {
     let stdin = io::stdin();

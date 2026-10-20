@@ -130,6 +130,9 @@ mod tests {
         let data = b"Hi There";
         let mac = hmac_sha256(&key, data);
         let hex = mac.iter().map(|b| format!("{:02x}", b)).collect::<String>();
-        assert_eq!(hex, "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7");
+        assert_eq!(
+            hex,
+            "b0344c61d8db38535ca8afceaf0bf12b881dc200c9833da726e9376c2e32cff7"
+        );
     }
 }

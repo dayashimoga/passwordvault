@@ -3,9 +3,9 @@
 
 //! Request dispatcher and domain security handler for browser Native Messaging.
 
+use rand_core::{OsRng, RngCore};
 use std::fs;
 use std::path::PathBuf;
-use rand_core::{OsRng, RngCore};
 
 use pwdvault_crypto::keys::DataKey;
 use pwdvault_generator::entropy::estimate_crack_time;
@@ -14,9 +14,7 @@ use pwdvault_vault::{
     ItemCategory, VaultContainer, VaultHeader, VaultItem, VaultPayload, VaultStorage,
 };
 
-use crate::protocol::{
-    HostError, LoginSummary, NativeRequest, NativeResponse, VaultStatus,
-};
+use crate::protocol::{HostError, LoginSummary, NativeRequest, NativeResponse, VaultStatus};
 
 /// Allowed extension identifiers for Chrome/Edge and Firefox.
 pub const ALLOWED_EXTENSIONS: &[&str] = &[
@@ -39,7 +37,12 @@ pub fn extract_domain(raw_url: &str) -> String {
     // Strip path and query
     let host_port = without_scheme.split(['/', '?', '#']).next().unwrap_or("");
     // Strip port if present
-    let host = host_port.split(':').next().unwrap_or("").trim().to_lowercase();
+    let host = host_port
+        .split(':')
+        .next()
+        .unwrap_or("")
+        .trim()
+        .to_lowercase();
     host
 }
 
@@ -135,7 +138,11 @@ impl HostSession {
     }
 
     /// Unlocks the vault using the provided master passphrase.
-    pub fn unlock(&mut self, passphrase: &str, path_override: Option<&str>) -> Result<usize, HostError> {
+    pub fn unlock(
+        &mut self,
+        passphrase: &str,
+        path_override: Option<&str>,
+    ) -> Result<usize, HostError> {
         let target_path = if let Some(p) = path_override {
             PathBuf::from(p)
         } else {
@@ -189,12 +196,10 @@ impl HostSession {
             }
 
             // Verify URL matches domain (exact or eTLD+1) or title matches domain
-            let domain_match = item.urls.iter().any(|u| {
-                domains_match(u, &domain)
-            }) || (!base_domain.is_empty() && (
-                item.title.to_lowercase().contains(&base_domain)
-                || base_domain.contains(&item.title.to_lowercase())
-            ));
+            let domain_match = item.urls.iter().any(|u| domains_match(u, &domain))
+                || (!base_domain.is_empty()
+                    && (item.title.to_lowercase().contains(&base_domain)
+                        || base_domain.contains(&item.title.to_lowercase())));
 
             if domain_match {
                 matches.push(LoginSummary {
@@ -231,12 +236,10 @@ impl HostSession {
         // Anti-phishing invariant: requested item must have at least one URL matching current domain,
         // or a title explicitly matching the base domain.
         let base_domain = extract_base_domain(&domain);
-        let is_authorized = item.urls.iter().any(|u| {
-            domains_match(u, &domain)
-        }) || (!base_domain.is_empty() && (
-            item.title.to_lowercase().contains(&base_domain)
-            || base_domain.contains(&item.title.to_lowercase())
-        ));
+        let is_authorized = item.urls.iter().any(|u| domains_match(u, &domain))
+            || (!base_domain.is_empty()
+                && (item.title.to_lowercase().contains(&base_domain)
+                    || base_domain.contains(&item.title.to_lowercase())));
 
         if !is_authorized {
             return Err(HostError::Validation(format!(
@@ -499,7 +502,10 @@ mod tests {
     #[test]
     fn test_extract_domain() {
         assert_eq!(extract_domain("https://github.com/login"), "github.com");
-        assert_eq!(extract_domain("http://sub.domain.co.uk:8080/path?query=1"), "sub.domain.co.uk");
+        assert_eq!(
+            extract_domain("http://sub.domain.co.uk:8080/path?query=1"),
+            "sub.domain.co.uk"
+        );
         assert_eq!(extract_domain("example.org/path"), "example.org");
     }
 
@@ -509,15 +515,27 @@ mod tests {
         assert_eq!(extract_base_domain("github.com"), "github.com");
         assert_eq!(extract_base_domain("mail.proton.me"), "proton.me");
         assert_eq!(extract_base_domain("service.gov.uk"), "service.gov.uk");
-        assert_eq!(extract_base_domain("portal.service.gov.uk"), "service.gov.uk");
+        assert_eq!(
+            extract_base_domain("portal.service.gov.uk"),
+            "service.gov.uk"
+        );
     }
 
     #[test]
     fn test_domains_match() {
-        assert!(domains_match("https://mail.proton.me", "https://account.proton.me/login"));
+        assert!(domains_match(
+            "https://mail.proton.me",
+            "https://account.proton.me/login"
+        ));
         assert!(domains_match("sub.github.com", "github.com"));
-        assert!(domains_match("https://github.com/login", "https://sub.github.com/sessions/new"));
-        assert!(!domains_match("https://github.com", "https://evil-phishing.com"));
+        assert!(domains_match(
+            "https://github.com/login",
+            "https://sub.github.com/sessions/new"
+        ));
+        assert!(!domains_match(
+            "https://github.com",
+            "https://evil-phishing.com"
+        ));
     }
 
     #[test]
@@ -530,7 +548,11 @@ mod tests {
 
         let resp = handle_request(&mut session, req);
         match resp {
-            NativeResponse::HandshakeResponse { session_token, vault_status, .. } => {
+            NativeResponse::HandshakeResponse {
+                session_token,
+                vault_status,
+                ..
+            } => {
                 assert!(!session_token.is_empty());
                 assert_eq!(vault_status, VaultStatus::NotFound);
                 assert!(session.validate_token(&session_token));
@@ -549,7 +571,11 @@ mod tests {
 
         let resp = handle_request(&mut session, req);
         match resp {
-            NativeResponse::GeneratePasswordResponse { password, entropy_bits, .. } => {
+            NativeResponse::GeneratePasswordResponse {
+                password,
+                entropy_bits,
+                ..
+            } => {
                 assert_eq!(password.len(), 24);
                 assert!(entropy_bits > 50);
             }

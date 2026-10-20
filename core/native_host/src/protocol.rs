@@ -3,9 +3,9 @@
 
 //! Wire protocol definitions and length-prefixed framing for browser Native Messaging.
 
-use std::io::{Read, Write};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use std::io::{Read, Write};
 
 /// Maximum message size allowed under Chrome/Edge Native Messaging protocol (1 MiB).
 pub const MAX_MESSAGE_SIZE: usize = 1024 * 1024;
@@ -256,7 +256,9 @@ mod tests {
         assert!(buffer.len() > 4);
 
         let mut cursor = Cursor::new(buffer);
-        let read = read_native_message(&mut cursor).expect("read failed").expect("none");
+        let read = read_native_message(&mut cursor)
+            .expect("read failed")
+            .expect("none");
 
         assert_eq!(read, original);
     }

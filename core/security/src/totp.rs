@@ -146,7 +146,12 @@ pub fn decode_base32(input: &str) -> Result<Vec<u8>, SecurityError> {
             // User typo tolerance:
             '0' => 14, // '0' treated as 'O'
             '1' => 8,  // '1' treated as 'I'
-            _ => return Err(SecurityError::InvalidBase32(format!("Invalid character: '{}'", ch))),
+            _ => {
+                return Err(SecurityError::InvalidBase32(format!(
+                    "Invalid character: '{}'",
+                    ch
+                )))
+            }
         };
 
         bits = (bits << 5) | val;
@@ -326,7 +331,9 @@ pub fn parse_otpauth_uri(uri_str: &str) -> Result<TotpConfig, SecurityError> {
     }
 
     if !secret_found || config.secret.is_empty() {
-        return Err(SecurityError::InvalidOtpUri("Missing required 'secret' parameter".into()));
+        return Err(SecurityError::InvalidOtpUri(
+            "Missing required 'secret' parameter".into(),
+        ));
     }
 
     Ok(config)
@@ -336,7 +343,9 @@ pub fn parse_otpauth_uri(uri_str: &str) -> Result<TotpConfig, SecurityError> {
 pub fn format_otpauth_uri(config: &TotpConfig) -> String {
     let secret_b32 = encode_base32(&config.secret);
     let label = match (&config.issuer, &config.account_name) {
-        (Some(iss), Some(acc)) => format!("{}:{}", urlencoding_encode(iss), urlencoding_encode(acc)),
+        (Some(iss), Some(acc)) => {
+            format!("{}:{}", urlencoding_encode(iss), urlencoding_encode(acc))
+        }
         (None, Some(acc)) => urlencoding_encode(acc),
         (Some(iss), None) => urlencoding_encode(iss),
         (None, None) => "Account".to_string(),
@@ -412,7 +421,8 @@ mod tests {
         // 32-byte key for SHA256
         let sha256_key = b"12345678901234567890123456789012".to_vec();
         // 64-byte key for SHA512
-        let sha512_key = b"1234567890123456789012345678901234567890123456789012345678901234".to_vec();
+        let sha512_key =
+            b"1234567890123456789012345678901234567890123456789012345678901234".to_vec();
 
         let cfg_sha1_8 = TotpConfig {
             secret: sha1_key.clone(),
@@ -456,7 +466,6 @@ mod tests {
         assert_eq!(generate_totp(&cfg_sha256_8, 1234567890), "91819424");
         assert_eq!(generate_totp(&cfg_sha512_8, 1234567890), "93441116");
 
-
         // 6-digit variant at 1234567890
         let cfg_sha1_6 = TotpConfig {
             secret: sha1_key,
@@ -467,7 +476,6 @@ mod tests {
             account_name: None,
         };
         assert_eq!(generate_totp(&cfg_sha1_6, 1234567890), "005924");
-
     }
 
     #[test]

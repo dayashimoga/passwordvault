@@ -118,7 +118,11 @@ pub fn audit_vault(payload: &VaultPayload) -> VaultAuditReport {
         .unwrap_or_default()
         .as_secs();
 
-    let active_items: Vec<&VaultItem> = payload.items.iter().filter(|i| i.trashed_at.is_none()).collect();
+    let active_items: Vec<&VaultItem> = payload
+        .items
+        .iter()
+        .filter(|i| i.trashed_at.is_none())
+        .collect();
     let total_active_items = active_items.len();
 
     // 1. Password reuse detection
@@ -151,7 +155,10 @@ pub fn audit_vault(payload: &VaultPayload) -> VaultAuditReport {
                 let mut reasons = Vec::new();
 
                 if pwd.len() < 12 {
-                    reasons.push(format!("Length is only {} characters (min 14 recommended)", pwd.len()));
+                    reasons.push(format!(
+                        "Length is only {} characters (min 14 recommended)",
+                        pwd.len()
+                    ));
                 }
                 if estimate.entropy_bits < 50 {
                     reasons.push(format!("Low entropy ({} bits)", estimate.entropy_bits));
@@ -203,9 +210,10 @@ pub fn audit_vault(payload: &VaultPayload) -> VaultAuditReport {
                 })
                 || item.notes.as_deref().unwrap_or("").contains("otpauth://");
 
-            let has_passkey = item.custom_fields.iter().any(|f| {
-                f.name.to_lowercase().contains("passkey")
-            });
+            let has_passkey = item
+                .custom_fields
+                .iter()
+                .any(|f| f.name.to_lowercase().contains("passkey"));
 
             if !has_totp && !has_passkey {
                 missing_2fa_items.push(item.title.clone());
@@ -286,12 +294,20 @@ mod tests {
         assert_eq!(count, Some(9654321));
 
         // Unknown suffix
-        assert_eq!(check_suffix_in_range_response("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", mock_api_body), None);
+        assert_eq!(
+            check_suffix_in_range_response("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF", mock_api_body),
+            None
+        );
     }
 
     #[test]
     fn test_vault_health_audit_detection() {
-        fn create_test_item(id: &str, title: &str, password: Option<&str>, updated_at: u64) -> VaultItem {
+        fn create_test_item(
+            id: &str,
+            title: &str,
+            password: Option<&str>,
+            updated_at: u64,
+        ) -> VaultItem {
             VaultItem {
                 id: id.to_string(),
                 title: title.to_string(),
@@ -319,7 +335,12 @@ mod tests {
             created_at: now - 100000,
             updated_at: now,
             items: vec![
-                create_test_item("item-1", "Service 1", Some("reused-pwd-123"), now - (100 * 86400)),
+                create_test_item(
+                    "item-1",
+                    "Service 1",
+                    Some("reused-pwd-123"),
+                    now - (100 * 86400),
+                ),
                 create_test_item("item-2", "Service 2", Some("reused-pwd-123"), now),
                 create_test_item("item-3", "Service 3", Some("short"), now),
             ],
@@ -333,4 +354,3 @@ mod tests {
         assert!(!report.recommendations.is_empty());
     }
 }
-

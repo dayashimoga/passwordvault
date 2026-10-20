@@ -68,7 +68,8 @@ pub fn merge_vault_payloads(local: &mut VaultPayload, remote: &VaultPayload) -> 
             }
 
             // 2. Tombstone handling (Deletion vs Edit)
-            if let (Some(remote_trash_time), None) = (remote_item.trashed_at, local_item.trashed_at) {
+            if let (Some(remote_trash_time), None) = (remote_item.trashed_at, local_item.trashed_at)
+            {
                 if remote_trash_time >= local_item.updated_at {
                     local_item.trashed_at = Some(remote_trash_time);
                     local_item.updated_at = std::cmp::max(local_item.updated_at, remote_trash_time);
@@ -76,11 +77,15 @@ pub fn merge_vault_payloads(local: &mut VaultPayload, remote: &VaultPayload) -> 
                     continue;
                 } else {
                     // Local edit is newer than remote trash; archive remote into revision history
-                    local_item.revision_history.insert(0, item_to_revision(remote_item));
+                    local_item
+                        .revision_history
+                        .insert(0, item_to_revision(remote_item));
                     report.conflicts_preserved += 1;
                     continue;
                 }
-            } else if let (None, Some(local_trash_time)) = (remote_item.trashed_at, local_item.trashed_at) {
+            } else if let (None, Some(local_trash_time)) =
+                (remote_item.trashed_at, local_item.trashed_at)
+            {
                 if remote_item.updated_at > local_trash_time {
                     // Remote edit is newer than local deletion: revive with remote content
                     let local_rev = item_to_revision(local_item);
@@ -92,7 +97,9 @@ pub fn merge_vault_payloads(local: &mut VaultPayload, remote: &VaultPayload) -> 
                     continue;
                 } else {
                     // Local deletion is newer than remote edit; preserve remote into revision history
-                    local_item.revision_history.insert(0, item_to_revision(remote_item));
+                    local_item
+                        .revision_history
+                        .insert(0, item_to_revision(remote_item));
                     report.conflicts_preserved += 1;
                     continue;
                 }
@@ -178,10 +185,14 @@ mod tests {
     #[test]
     fn test_crdt_non_conflicting_addition() {
         let mut local = VaultPayload::new("Local");
-        local.items.push(create_dummy_item("item-1", "GitHub", "pwd1", 1000));
+        local
+            .items
+            .push(create_dummy_item("item-1", "GitHub", "pwd1", 1000));
 
         let mut remote = VaultPayload::new("Remote");
-        remote.items.push(create_dummy_item("item-2", "GitLab", "pwd2", 1100));
+        remote
+            .items
+            .push(create_dummy_item("item-2", "GitLab", "pwd2", 1100));
 
         let report = merge_vault_payloads(&mut local, &remote);
         assert_eq!(report.added, 1);
@@ -192,10 +203,17 @@ mod tests {
     #[test]
     fn test_crdt_conflict_resolution_and_revision_preservation() {
         let mut local = VaultPayload::new("Local");
-        local.items.push(create_dummy_item("item-1", "Proton", "pwd-local", 2000));
+        local
+            .items
+            .push(create_dummy_item("item-1", "Proton", "pwd-local", 2000));
 
         let mut remote = VaultPayload::new("Remote");
-        remote.items.push(create_dummy_item("item-1", "Proton", "pwd-remote-newer", 3000));
+        remote.items.push(create_dummy_item(
+            "item-1",
+            "Proton",
+            "pwd-remote-newer",
+            3000,
+        ));
 
         let report = merge_vault_payloads(&mut local, &remote);
         assert_eq!(report.updated, 1);
@@ -205,13 +223,18 @@ mod tests {
         assert_eq!(local.items[0].password.as_deref(), Some("pwd-remote-newer"));
         // Losing local item is archived in revision history
         assert_eq!(local.items[0].revision_history.len(), 1);
-        assert_eq!(local.items[0].revision_history[0].password.as_deref(), Some("pwd-local"));
+        assert_eq!(
+            local.items[0].revision_history[0].password.as_deref(),
+            Some("pwd-local")
+        );
     }
 
     #[test]
     fn test_crdt_tombstone_propagation() {
         let mut local = VaultPayload::new("Local");
-        local.items.push(create_dummy_item("item-1", "OldSite", "pwd1", 1000));
+        local
+            .items
+            .push(create_dummy_item("item-1", "OldSite", "pwd1", 1000));
 
         let mut remote = VaultPayload::new("Remote");
         let mut trashed_item = create_dummy_item("item-1", "OldSite", "pwd1", 1000);
