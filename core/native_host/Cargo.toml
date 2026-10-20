@@ -1,0 +1,30 @@
+[package]
+name = "pwdvault-native-host"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "pwdvault-native-host"
+path = "src/main.rs"
+
+[lib]
+name = "pwdvault_native_host"
+path = "src/lib.rs"
+
+[dependencies]
+pwdvault-crypto = { path = "../crypto" }
+pwdvault-vault = { path = "../vault" }
+pwdvault-generator = { path = "../generator" }
+pwdvault-search = { path = "../search" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+blake3.workspace = true
+rand_core.workspace = true
+zeroize.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true

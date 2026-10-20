@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Antigravity Vault</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-group">
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L3 7V12C3 17.52 6.84 22.74 12 24C17.16 22.74 21 17.52 21 12V7L12 2Z" fill="#00f0ff" fill-opacity="0.15" stroke="#00f0ff" stroke-width="2"/>
+            <path d="M12 8V16M8 12H16" stroke="#00f0ff" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="title">ANTIGRAVITY</span>
+          <span class="subtitle">VAULT CORE</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <span class="status-pill status-locked" id="status-pill">Locked</span>
+        <button class="icon-btn" id="btn-lock" title="Lock Vault" style="display: none;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Domain Context Bar -->
+    <div class="domain-bar" id="domain-bar">
+      <span class="domain-label">Current Site:</span>
+      <span class="domain-host" id="domain-host">Detecting...</span>
+    </div>
+
+    <!-- Error Banner -->
+    <div class="error-banner" id="error-banner" style="display: none;"></div>
+
+    <!-- View: Locked -->
+    <section class="view-panel" id="view-locked">
+      <div class="panel-card">
+        <h2 class="panel-title">Unlock Vault</h2>
+        <p class="panel-desc">Enter your master passphrase to enable browser autofill.</p>
+
+        <form id="form-unlock">
+          <div class="input-group">
+            <input type="password" id="input-passphrase" placeholder="Master Passphrase" autocomplete="current-password" required autofocus />
+          </div>
+          <button type="submit" class="btn-primary" id="btn-submit-unlock">
+            <span>Unlock Vault</span>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- View: Unlocked -->
+    <section class="view-panel" id="view-unlocked" style="display: none;">
+      <!-- Tab Navigation -->
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="tab-logins" id="btn-tab-logins">Logins</button>
+        <button class="nav-tab" data-tab="tab-generator" id="btn-tab-generator">Generator</button>
+      </nav>
+
+      <!-- Tab Content: Logins -->
+      <div class="tab-pane active" id="tab-logins">
+        <div class="logins-list" id="logins-list">
+          <div class="loading-state">Querying matching credentials...</div>
+        </div>
+
+        <div class="panel-footer-action">
+          <button class="btn-secondary" id="btn-save-current">
+            + Save Credentials for this Site
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content: Generator -->
+      <div class="tab-pane" id="tab-generator">
+        <div class="generator-card">
+          <div class="password-display-box">
+            <span class="generated-password" id="gen-password">Generating...</span>
+            <button class="icon-btn-copy" id="btn-copy-gen" title="Copy Password">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+
+          <div class="entropy-bar-container">
+            <div class="entropy-fill" id="entropy-fill" style="width: 80%;"></div>
+          </div>
+          <div class="entropy-label" id="entropy-label">Entropy: ~128 bits (Centuries)</div>
+
+          <div class="slider-group">
+            <div class="slider-header">
+              <span>Length</span>
+              <span id="slider-length-val">20</span>
+            </div>
+            <input type="range" id="slider-length" min="8" max="64" value="20" />
+          </div>
+
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="chk-symbols" checked />
+              <span>Special Symbols (!@#$%)</span>
+            </label>
+          </div>
+
+          <button class="btn-primary" id="btn-regenerate">Regenerate Password</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- View: Disconnected / Error -->
+    <section class="view-panel" id="view-disconnected" style="display: none;">
+      <div class="panel-card error-card">
+        <h2 class="panel-title">Host Not Connected</h2>
+        <p class="panel-desc">
+          The Rust native host <code>com.antigravity.pwdvault</code> was not detected on your system.
+        </p>
+        <p class="panel-hint">
+          Run <code>scripts/register_native_host.ps1</code> in PowerShell to register the host with Windows Registry.
+        </p>
+        <button class="btn-secondary" id="btn-retry-connection">Retry Connection</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

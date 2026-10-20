@@ -1,0 +1,23 @@
+[package]
+name = "pwdvault-ffi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[lib]
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[dependencies]
+pwdvault-crypto = { path = "../crypto" }
+pwdvault-vault = { path = "../vault" }
+pwdvault-generator = { path = "../generator" }
+pwdvault-search = { path = "../search" }
+pwdvault-backup = { path = "../backup" }
+pwdvault-import-export = { path = "../import_export" }
+pwdvault-sync = { path = "../sync" }
+pwdvault-security = { path = "../security" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+zeroize.workspace = true

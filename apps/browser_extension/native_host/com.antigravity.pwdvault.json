@@ -1,0 +1,10 @@
+{
+  "name": "com.antigravity.pwdvault",
+  "description": "Antigravity Vault Native Messaging Host",
+  "path": "pwdvault-native-host.exe",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://*",
+    "edge-extension://*"
+  ]
+}

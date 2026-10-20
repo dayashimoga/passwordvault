@@ -1,0 +1,161 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:e73edaaf-6f0c-4c82-8252-93dca59c0128",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-20T05:00:00Z",
+    "tools": [
+      {
+        "vendor": "Antigravity Engineering",
+        "name": "Antigravity SBOM Generator",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bom-ref": "pkg:generic/antigravity-vault@1.0.0",
+      "name": "Antigravity Vault",
+      "version": "1.0.0",
+      "description": "Production-grade personal password manager and zero-knowledge encrypted vault",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/argon2@0.5.3",
+      "name": "argon2",
+      "version": "0.5.3",
+      "description": "Pure Rust implementation of the Argon2 password-hashing function (Argon2id)",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }, { "license": { "id": "MIT" } }],
+      "purl": "pkg:cargo/argon2@0.5.3"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/chacha20poly1305@0.10.1",
+      "name": "chacha20poly1305",
+      "version": "0.10.1",
+      "description": "Pure Rust AEAD implementation of ChaCha20Poly1305 and XChaCha20Poly1305",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }, { "license": { "id": "MIT" } }],
+      "purl": "pkg:cargo/chacha20poly1305@0.10.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/zeroize@1.8.1",
+      "name": "zeroize",
+      "version": "1.8.1",
+      "description": "Securely clear secrets from memory using volatile writes or platform zeroization primitives",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }, { "license": { "id": "MIT" } }],
+      "purl": "pkg:cargo/zeroize@1.8.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/blake3@1.5.5",
+      "name": "blake3",
+      "version": "1.5.5",
+      "description": "BLAKE3 cryptographic hash function, key derivation, and MAC engine",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }, { "license": { "id": "CC0-1.0" } }],
+      "purl": "pkg:cargo/blake3@1.5.5"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/subtle@2.6.1",
+      "name": "subtle",
+      "version": "2.6.1",
+      "description": "Pure-Rust constant-time cryptographic comparison and conditional selection operations",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "BSD-3-Clause" } }],
+      "purl": "pkg:cargo/subtle@2.6.1"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/sha2@0.10.8",
+      "name": "sha2",
+      "version": "0.10.8",
+      "description": "Pure Rust implementation of the SHA-2 cryptographic hash functions (SHA-256, SHA-512)",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }, { "license": { "id": "MIT" } }],
+      "purl": "pkg:cargo/sha2@0.10.8"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/hkdf@0.12.4",
+      "name": "hkdf",
+      "version": "0.12.4",
+      "description": "HMAC-based Extract-and-Expand Key Derivation Function (RFC 5869)",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }, { "license": { "id": "MIT" } }],
+      "purl": "pkg:cargo/hkdf@0.12.4"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/serde@1.0.217",
+      "name": "serde",
+      "version": "1.0.217",
+      "description": "Generic serialization/deserialization framework for Rust",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }, { "license": { "id": "MIT" } }],
+      "purl": "pkg:cargo/serde@1.0.217"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:cargo/serde_json@1.0.138",
+      "name": "serde_json",
+      "version": "1.0.138",
+      "description": "High-performance JSON serialization for Serde",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "Apache-2.0" } }, { "license": { "id": "MIT" } }],
+      "purl": "pkg:cargo/serde_json@1.0.138"
+    },
+    {
+      "type": "framework",
+      "bom-ref": "pkg:pub/flutter@3.38.4",
+      "name": "flutter",
+      "version": "3.38.4",
+      "description": "Multi-platform UI toolkit",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "BSD-3-Clause" } }],
+      "purl": "pkg:pub/flutter@3.38.4"
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pub/ffi@2.1.3",
+      "name": "ffi",
+      "version": "2.1.3",
+      "description": "Foreign Function Interface utilities for Dart",
+      "scope": "required",
+      "licenses": [{ "license": { "id": "BSD-3-Clause" } }],
+      "purl": "pkg:pub/ffi@2.1.3"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:generic/antigravity-vault@1.0.0",
+      "dependsOn": [
+        "pkg:cargo/argon2@0.5.3",
+        "pkg:cargo/chacha20poly1305@0.10.1",
+        "pkg:cargo/zeroize@1.8.1",
+        "pkg:cargo/blake3@1.5.5",
+        "pkg:cargo/subtle@2.6.1",
+        "pkg:cargo/sha2@0.10.8",
+        "pkg:cargo/hkdf@0.12.4",
+        "pkg:cargo/serde@1.0.217",
+        "pkg:cargo/serde_json@1.0.138",
+        "pkg:pub/flutter@3.38.4",
+        "pkg:pub/ffi@2.1.3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+[package]
+name = "pwdvault-benchmarks"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+pwdvault-crypto = { path = "../core/crypto" }
+pwdvault-vault = { path = "../core/vault" }
+pwdvault-search = { path = "../core/search" }
+
+[[bin]]
+name = "kdf_bench"
+path = "src/kdf_bench.rs"
+
+[[bin]]
+name = "search_bench"
+path = "src/search_bench.rs"

@@ -1,0 +1,126 @@
+name: CI / Multi-Platform Verification
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  docs-and-lint:
+    name: Documentation & Quality Gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Validate Documentation Invariants
+        run: |
+          for doc in \
+            docs/Requirements.md \
+            docs/Architecture.md \
+            docs/SecurityArchitecture.md \
+            docs/ADR/ADR-001-vault-format-and-storage.md \
+            docs/ADR/ADR-002-cryptographic-primitives-and-kdf.md \
+            docs/ADR/ADR-003-ffi-and-ui-integration.md \
+            docs/ADR/ADR-004-memory-zeroization-and-sanitization.md \
+            docs/ImplementationPlan.md \
+            docs/Setup.md \
+            docs/DeveloperGuide.md \
+            docs/CodeUnderstanding.md \
+            docs/UserGuide.md \
+            docs/TestingStrategy.md \
+            docs/PerformanceStrategy.md \
+            docs/RecoveryGuide.md \
+            docs/Troubleshooting.md \
+            docs/ReleaseProcess.md \
+            docs/RiskRegister.md \
+            docs/CHANGELOG.md \
+            docs/TODO.md; do
+            if [ ! -f "$doc" ]; then
+              echo "Missing required document: $doc"
+              exit 1
+            fi
+          done
+
+      - name: Check Formatting (cargo fmt)
+        run: |
+          cd core
+          cargo fmt --all -- --check
+
+      - name: Clippy Warnings-as-Errors
+        run: |
+          cd core
+          cargo clippy --workspace --all-targets -- -D warnings
+
+  core-tests-linux:
+    name: Core Tests (Linux x64)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run Core Unit & Integration Tests
+        run: |
+          cd core
+          cargo test --workspace --verbose
+
+      - name: Run Cryptographic Benchmarks
+        run: |
+          cd benchmarks
+          cargo run --release --bin kdf_bench
+
+  core-tests-windows:
+    name: Core Tests (Windows x64)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run Core Workspace Tests
+        run: |
+          cd core
+          cargo test --workspace --verbose
+
+      - name: Run Benchmarks
+        run: |
+          cd benchmarks
+          cargo run --release --bin kdf_bench
+
+  security-audit-and-sbom:
+    name: Security Audit & CycloneDX SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-audit & cargo-cyclonedx
+        run: |
+          cargo install cargo-audit cargo-cyclonedx --locked
+
+      - name: Audit Dependencies for Known Vulnerabilities
+        run: |
+          cd core
+          cargo audit
+
+      - name: Generate CycloneDX SBOM
+        run: |
+          cd core
+          cargo cyclonedx --all --output-format json
+
+      - name: Upload SBOM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-cyclonedx
+          path: core/*.cdx.json
+          retention-days: 90

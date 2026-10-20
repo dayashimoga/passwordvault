@@ -1,0 +1,17 @@
+[package]
+name = "pwdvault-vault"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+pwdvault-crypto = { path = "../crypto" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+zeroize.workspace = true
+getrandom.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true

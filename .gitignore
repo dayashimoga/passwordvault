@@ -1,0 +1,38 @@
+# Rust build artifacts
+target/
+**/target/
+**/*.rs.bk
+*.pdb
+
+# Flutter / Dart build artifacts
+.dart_tool/
+**/.dart_tool/
+.pub-cache/
+**/.pub-cache/
+.pub/
+**/.pub/
+build/
+**/build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+# Packaging and distribution
+dist/
+**/dist/
+
+# OS and Editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
+*~
+.idea/
+*.iml
+*.vscode/
+
+# Logs and scratch
+*.log
+scratch/
+tmp/
+*.tmp

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Antigravity Vault
+GenericName=Password Manager
+Comment=High-assurance zero-knowledge personal password generator and encrypted vault
+Exec=pwdvault_flutter %u
+Icon=pwdvault
+Terminal=false
+Categories=Utility;Security;
+Keywords=password;vault;security;encryption;passphrase;generator;
+StartupNotify=true
+StartupWMClass=pwdvault_flutter
+MimeType=application/x-vaultbak;

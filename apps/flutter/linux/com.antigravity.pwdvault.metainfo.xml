@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.antigravity.pwdvault</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT OR Apache-2.0</project_license>
+  <name>Antigravity Vault</name>
+  <summary>High-assurance zero-knowledge personal password generator and encrypted vault</summary>
+  <description>
+    <p>
+      Antigravity Vault is an ultra-secure, memory-hygienic personal password generator and encrypted vault built with Rust Stable and Flutter.
+    </p>
+    <ul>
+      <li>Argon2id memory-hard Key Derivation Function</li>
+      <li>XChaCha20-Poly1305 authenticated payload encryption</li>
+      <li>Automatic memory zeroization on drop and lock</li>
+      <li>Offline Emergency Recovery Kit and authenticated .vaultbak backups</li>
+      <li>Multi-format import from Bitwarden, 1Password, KeePass, and RFC 4180 CSV</li>
+      <li>Hardware biometrics and screen protection</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">pwdvault.desktop</launchable>
+  <provides>
+    <binary>pwdvault_flutter</binary>
+  </provides>
+  <content_rating type="oars-1.1" />
+  <categories>
+    <category>Utility</category>
+    <category>Security</category>
+  </categories>
+</component>

@@ -1,0 +1,170 @@
+/* Antigravity Vault - In-Page Content Styles (Slate Cyberpunk Theme) */
+
+:root {
+  --pwdvault-bg: #0d1117;
+  --pwdvault-card: #161b22;
+  --pwdvault-cyan: #00f0ff;
+  --pwdvault-cyan-glow: rgba(0, 240, 255, 0.25);
+  --pwdvault-text: #f0f6fc;
+  --pwdvault-text-muted: #8b949e;
+  --pwdvault-border: rgba(0, 240, 255, 0.2);
+}
+
+.pwdvault-input-badge {
+  position: absolute !important;
+  width: 24px !important;
+  height: 24px !important;
+  z-index: 2147483645 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important;
+  background: rgba(13, 17, 23, 0.85) !important;
+  border: 1px solid var(--pwdvault-border) !important;
+  backdrop-filter: blur(8px) !important;
+  cursor: pointer !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 6px var(--pwdvault-cyan-glow) !important;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+  box-sizing: border-box !important;
+}
+
+.pwdvault-input-badge:hover {
+  transform: scale(1.1) !important;
+  border-color: var(--pwdvault-cyan) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 12px var(--pwdvault-cyan) !important;
+}
+
+.pwdvault-dropdown-menu {
+  position: absolute !important;
+  width: 270px !important;
+  max-height: 320px !important;
+  z-index: 2147483647 !important;
+  overflow-y: auto !important;
+  border-radius: 8px !important;
+  background: rgba(13, 17, 23, 0.96) !important;
+  border: 1px solid var(--pwdvault-border) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65), 0 0 16px var(--pwdvault-cyan-glow) !important;
+  backdrop-filter: blur(16px) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  font-size: 13px !important;
+  color: var(--pwdvault-text) !important;
+  animation: pwdvaultFadeIn 0.15s cubic-bezier(0, 0, 0.2, 1) !important;
+  box-sizing: border-box !important;
+}
+
+.pwdvault-menu-header {
+  padding: 8px 12px !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.8px !important;
+  color: var(--pwdvault-cyan) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(22, 27, 34, 0.5) !important;
+}
+
+.pwdvault-menu-item {
+  padding: 10px 12px !important;
+  cursor: pointer !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  transition: background 0.12s ease !important;
+}
+
+.pwdvault-menu-item:hover {
+  background: rgba(0, 240, 255, 0.12) !important;
+}
+
+.pwdvault-item-title {
+  font-weight: 600 !important;
+  color: var(--pwdvault-text) !important;
+  margin-bottom: 2px !important;
+}
+
+.pwdvault-item-user {
+  font-size: 11px !important;
+  color: var(--pwdvault-text-muted) !important;
+}
+
+.pwdvault-menu-empty,
+.pwdvault-disabled {
+  padding: 12px !important;
+  color: var(--pwdvault-text-muted) !important;
+  font-size: 12px !important;
+  text-align: center !important;
+}
+
+.pwdvault-save-toast {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 2147483647 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 12px 16px !important;
+  background: rgba(13, 17, 23, 0.95) !important;
+  border: 1px solid var(--pwdvault-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 12px var(--pwdvault-cyan-glow) !important;
+  backdrop-filter: blur(12px) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+  color: var(--pwdvault-text) !important;
+  animation: pwdvaultSlideUp 0.25s ease-out !important;
+}
+
+.pwdvault-toast-title {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--pwdvault-cyan) !important;
+}
+
+.pwdvault-toast-sub {
+  font-size: 11px !important;
+  color: var(--pwdvault-text-muted) !important;
+}
+
+.pwdvault-toast-actions {
+  display: flex !important;
+  gap: 6px !important;
+}
+
+.pwdvault-btn-primary {
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  border-radius: 4px !important;
+  border: none !important;
+  background: var(--pwdvault-cyan) !important;
+  color: #0d1117 !important;
+  cursor: pointer !important;
+  transition: opacity 0.15s ease !important;
+}
+
+.pwdvault-btn-primary:hover {
+  opacity: 0.9 !important;
+}
+
+.pwdvault-btn-secondary {
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  border-radius: 4px !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: transparent !important;
+  color: var(--pwdvault-text-muted) !important;
+  cursor: pointer !important;
+}
+
+.pwdvault-btn-secondary:hover {
+  color: var(--pwdvault-text) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+@keyframes pwdvaultFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pwdvaultSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}

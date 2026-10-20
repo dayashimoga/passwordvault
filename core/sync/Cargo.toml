@@ -1,0 +1,19 @@
+[package]
+name = "pwdvault-sync"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+pwdvault-crypto = { path = "../crypto" }
+pwdvault-vault = { path = "../vault" }
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+blake3.workspace = true
+rand_core.workspace = true
+zeroize.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true

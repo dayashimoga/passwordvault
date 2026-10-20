@@ -1,0 +1,15 @@
+Source: pwdvault
+Section: utils
+Priority: optional
+Maintainer: Antigravity Vault Core Team <security@antigravity.internal>
+Build-Depends: debhelper-compat (= 13), clang, cmake, ninja-build, pkg-config, libgtk-3-dev, libsecret-1-dev
+Standards-Version: 4.6.2
+Homepage: https://github.com/antigravity/pwdvault
+
+Package: pwdvault
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgtk-3-0, libsecret-1-0
+Description: High-assurance personal password generator and encrypted vault
+ Antigravity Vault is a zero-knowledge personal password generator and
+ encrypted vault featuring Argon2id KDF, XChaCha20-Poly1305 encryption,
+ memory zeroization, and multi-format portability.
